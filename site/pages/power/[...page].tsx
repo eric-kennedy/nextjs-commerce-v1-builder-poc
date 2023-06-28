@@ -59,7 +59,7 @@ export async function getStaticProps({
       page: page || null,
       product: product || null,
     },
-    revalidate: 5,
+    revalidate: 1,
   }
 }
 
