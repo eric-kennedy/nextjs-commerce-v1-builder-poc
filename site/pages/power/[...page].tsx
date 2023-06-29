@@ -5,8 +5,17 @@ import type {
 } from 'next'
 // import useAddItem from '@framework/cart/use-add-item'
 // import { useAddItem } from '@framework/cart'
-import { useEffect, useState } from 'react'
+// import { useEffect, useState } from 'react'
+import { useUI } from '@components/ui/context'
 import { useRouter } from 'next/router'
+import { Sidebar } from '@components/ui'
+import CartSidebarView from '@components/cart/CartSidebarView'
+import PaymentMethodView from '@components/checkout/PaymentMethodView'
+import CheckoutSidebarView from '@components/checkout/CheckoutSidebarView'
+import ShippingView from '@components/checkout/ShippingView'
+import { MenuSidebarView } from '@components/common/UserNav'
+import { CommerceProvider } from '@framework'
+import { CheckoutProvider } from '@components/checkout/context'
 import DefaultErrorPage from 'next/error'
 import Head from 'next/head'
 import React from 'react'
@@ -19,6 +28,7 @@ import {
 import commerce from '@lib/api/commerce'
 import { ProductCard } from '@components/product'
 import { WishlistCard } from '@components/wishlist'
+import type { Link as LinkProps } from '../../components/common/UserNav/MenuSidebarView'
 
 /*
   Initialize the Builder SDK with your organization's API Key
@@ -123,10 +133,11 @@ export default function Page({
 
   // const addToCart = async () => {
   //   await addItem({
-  //     productId: String(product?.product?.id ?? 0),
-  //     variantId: String(product?.product?.variants[0]?.id ?? 0),
+  //     productId: String(product?.id ?? 0),
+  //     variantId: String(product?.variants[0]?.id ?? 0),
   //   })
   // }
+
   console.log("here's the BC product")
   console.log(product)
   return (
@@ -136,25 +147,38 @@ export default function Page({
         <title>{page?.data.title}</title>
         <meta name="description" content={page?.data.descripton} />
       </Head>
-      <div style={{ padding: 50, textAlign: 'center' }}>
-        {/* Put your header or main layout here */}
-        Your header
-      </div>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: page?.data.product.data.data.description,
-        }}
-      ></div>
-      {product && (
-        <>
-          <ProductCard key={product.id} product={product} variant="slim" />
-          {/* <WishlistCard key={product.product.path} item={product} /> */}
-          <button>Add To Cart</button>
-        </>
-      )}
-      {/* Render the Builder page */}
-      <BuilderComponent model="page" content={page} />
+      <CommerceProvider locale={router.locale ?? 'en-US'}>
+        <div style={{ padding: 50, textAlign: 'center' }}>
+          {/* Put your header or main layout here */}
+          Your header
+        </div>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: page?.data.product.data.data.description,
+          }}
+        ></div>
+        {product && (
+          <>
+            {/* <ProductCard key={product.id} product={product} variant="slim" /> */}
+            <WishlistCard
+              key={product.path}
+              item={{
+                id: '1234',
+                productId: '',
+                variantId: '',
+                product: product,
+              }}
+            />
+            {/* <button onClick={addToCart}>Add To Cart</button> */}
+          </>
+        )}
+        <CheckoutProvider>
+          <SidebarUI links={[]} />
+        </CheckoutProvider>
 
+        {/* Render the Builder page */}
+        <BuilderComponent model="page" content={page} />
+      </CommerceProvider>
       <div style={{ padding: 50, textAlign: 'center' }}>
         {/* Put your footer or main layout here */}
         Your footer
@@ -229,3 +253,30 @@ Builder.register('insertMenu', {
   name: 'My Components',
   items: [{ item: 'ExampleCustomComponent', name: 'My React Component' }],
 })
+
+const SidebarView: React.FC<{
+  sidebarView: string
+  closeSidebar(): any
+  links: LinkProps[]
+}> = ({ sidebarView, closeSidebar, links }) => {
+  return (
+    <Sidebar onClose={closeSidebar}>
+      {sidebarView === 'CART_VIEW' && <CartSidebarView />}
+      {sidebarView === 'SHIPPING_VIEW' && <ShippingView />}
+      {sidebarView === 'PAYMENT_VIEW' && <PaymentMethodView />}
+      {sidebarView === 'CHECKOUT_VIEW' && <CheckoutSidebarView />}
+      {sidebarView === 'MOBILE_MENU_VIEW' && <MenuSidebarView links={links} />}
+    </Sidebar>
+  )
+}
+
+const SidebarUI: React.FC<{ links: LinkProps[] }> = ({ links }) => {
+  const { displaySidebar, closeSidebar, sidebarView } = useUI()
+  return displaySidebar ? (
+    <SidebarView
+      links={links}
+      sidebarView={sidebarView}
+      closeSidebar={closeSidebar}
+    />
+  ) : null
+}
