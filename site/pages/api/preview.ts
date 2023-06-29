@@ -31,10 +31,8 @@ export default async function handler(
   // Redirect to the path from the fetched post
   // We don't redirect to req.query.slug as that might lead to open redirect vulnerabilities
   // #goals
-  res.redirect(
-    '/' +
-      (Array.isArray(req.query.slug)
-        ? req.query.slug.join('/')
-        : req.query.slug)
-  )
+  let path = Array.isArray(req.query.slug)
+    ? req.query.slug.join('/')
+    : req.query.slug
+  res.redirect(path.startsWith('/') ? path : '/' + path)
 }
