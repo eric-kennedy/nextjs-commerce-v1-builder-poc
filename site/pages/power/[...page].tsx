@@ -57,7 +57,7 @@ export async function getStaticProps({
       userAttributes: {
         urlPath: '/power/' + (params?.page?.join('/') || ''),
       },
-      // preview: preview,
+      preview: preview,
     })
     .toPromise()
   console.log('Builder Response')
@@ -89,7 +89,7 @@ export async function getStaticProps({
       page: page || null,
       product: product || null,
     },
-    revalidate: 60,
+    revalidate: 1,
   }
 }
 
@@ -183,7 +183,7 @@ export default function Page({
         </CheckoutProvider>
 
         {/* Render the Builder page */}
-        <BuilderComponent model="landing-page" content={page || undefined} />
+        <BuilderComponent model="page" content={page || undefined} />
       </CommerceProvider>
       <div style={{ padding: 50, textAlign: 'center' }}>
         {/* Put your footer or main layout here */}
