@@ -45,6 +45,7 @@ export async function getStaticProps({
       userAttributes: {
         urlPath: '/power/' + (params?.page?.join('/') || ''),
       },
+      preview: preview,
     })
     .toPromise()
   const product = await commerce.getProduct({
@@ -59,7 +60,7 @@ export async function getStaticProps({
       page: page || null,
       product: product || null,
     },
-    revalidate: 1,
+    revalidate: 60,
   }
 }
 
