@@ -32,6 +32,9 @@ export default async function handler(
   // We don't redirect to req.query.slug as that might lead to open redirect vulnerabilities
   // #goals
   res.redirect(
-    Array.isArray(req.query.slug) ? req.query.slug.join('/') : req.query.slug
+    '/' +
+      (Array.isArray(req.query.slug)
+        ? req.query.slug.join('/')
+        : req.query.slug)
   )
 }
