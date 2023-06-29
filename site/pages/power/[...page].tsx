@@ -48,11 +48,26 @@ export async function getStaticProps({
       preview: preview,
     })
     .toPromise()
-  const product = await commerce.getProduct({
-    variables: { slug: 'dustpan-brush' },
-    config,
-    preview,
-  })
+  console.log('product ID')
+  console.log(page?.data?.product?.data?.data?.id)
+  console.log('slug')
+  console.log(page?.data?.product?.data?.data?.custom_url?.url)
+  let product = null
+  if (page?.data?.product?.data?.data?.id) {
+    const graphqlData = await commerce.getAllProducts({
+      variables: { first: 1, ids: [page.data.product.data.data.id] },
+      config,
+    })
+    console.log('Found ' + (graphqlData?.products?.length ?? 0) + ' products')
+    if (graphqlData.products && graphqlData.products.length === 1) {
+      product = graphqlData.products[0]
+    }
+  }
+  // const product = await commerce.getProduct({
+  //   variables: { slug: 'dustpan-brush' },
+  //   config,
+  //   preview,
+  // })
   console.log('THE product')
   console.log(product)
   return {
@@ -112,7 +127,7 @@ export default function Page({
   //     variantId: String(product?.product?.variants[0]?.id ?? 0),
   //   })
   // }
-  console.log("here's the product")
+  console.log("here's the BC product")
   console.log(product)
   return (
     <>
@@ -130,13 +145,9 @@ export default function Page({
           __html: page?.data.product.data.data.description,
         }}
       ></div>
-      {product && product.product && (
+      {product && (
         <>
-          <ProductCard
-            key={product.product.id}
-            product={product.product}
-            variant="slim"
-          />
+          <ProductCard key={product.id} product={product} variant="slim" />
           {/* <WishlistCard key={product.product.path} item={product} /> */}
           <button>Add To Cart</button>
         </>
