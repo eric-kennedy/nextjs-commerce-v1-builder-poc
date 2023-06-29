@@ -49,15 +49,19 @@ export async function getStaticProps({
   */
   console.log(params)
   const config = { locale, locales }
+  console.log('preview')
+  console.log(preview)
 
   const page = await builder
     .get('landing-page', {
       userAttributes: {
         urlPath: '/power/' + (params?.page?.join('/') || ''),
       },
-      preview: preview,
+      // preview: preview,
     })
     .toPromise()
+  console.log('Builder Response')
+  console.log(page)
   console.log('product ID')
   console.log(page?.data?.product?.data?.data?.id)
   console.log('slug')
@@ -103,8 +107,10 @@ export async function getStaticPaths({ locales }: GetStaticPathsContext) {
   console.log(pages)
 
   return {
-    paths: pages.map((page) => `${page.data?.url}`),
-    fallback: true,
+    paths: pages
+      .map((page) => `${page.data?.url}`)
+      .filter((url) => url !== '/'),
+    fallback: 'blocking',
   }
 }
 
@@ -177,7 +183,7 @@ export default function Page({
         </CheckoutProvider>
 
         {/* Render the Builder page */}
-        <BuilderComponent model="page" content={page} />
+        <BuilderComponent model="landing-page" content={page || undefined} />
       </CommerceProvider>
       <div style={{ padding: 50, textAlign: 'center' }}>
         {/* Put your footer or main layout here */}
