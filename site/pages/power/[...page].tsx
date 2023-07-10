@@ -123,7 +123,7 @@ export async function getServerSideProps({
 //   }
 // }
 
-export default function Page({ page, product }) {
+export default function Page({ page, product }: any) {
   const router = useRouter()
   // const addItem = useAddItem()
   /*
