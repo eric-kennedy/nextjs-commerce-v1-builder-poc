@@ -38,7 +38,7 @@ const API_KEY = '9ef67a21535e47fd988bd46f0fed5cc4'
 builder.init(API_KEY)
 builder.apiVersion = 'v3'
 
-export async function getStaticProps({
+export async function getServerSideProps({
   params,
   locale,
   locales,
@@ -98,35 +98,32 @@ export async function getStaticProps({
       page: page || null,
       product: product || null,
     },
-    revalidate: 1,
+    // revalidate: 1,
   }
 }
 
-export async function getStaticPaths({ locales }: GetStaticPathsContext) {
-  /*
-    Fetch all published pages for the current model.
-    Using the `fields` option will limit the size of the response
-    and only return the `data.url` field from the matching pages.
-  */
-  const pages = await builder.getAll('landing-page', {
-    fields: 'data.url', // only request the `data.url` field
-    options: { noTargeting: true },
-    limit: 0,
-  })
-  console.log(pages)
+// export async function getStaticPaths({ locales }: GetStaticPathsContext) {
+//   /*
+//     Fetch all published pages for the current model.
+//     Using the `fields` option will limit the size of the response
+//     and only return the `data.url` field from the matching pages.
+//   */
+//   const pages = await builder.getAll('landing-page', {
+//     fields: 'data.url', // only request the `data.url` field
+//     options: { noTargeting: true },
+//     limit: 0,
+//   })
+//   console.log(pages)
 
-  return {
-    paths: pages
-      .map((page) => `${page.data?.url}`)
-      .filter((url) => url !== '/'),
-    fallback: 'blocking',
-  }
-}
+//   return {
+//     paths: pages
+//       .map((page) => `${page.data?.url}`)
+//       .filter((url) => url !== '/'),
+//     fallback: 'blocking',
+//   }
+// }
 
-export default function Page({
-  page,
-  product,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function Page({ page, product }) {
   const router = useRouter()
   // const addItem = useAddItem()
   /*
