@@ -34,7 +34,9 @@ import type { Link as LinkProps } from '../../components/common/UserNav/MenuSide
   Initialize the Builder SDK with your organization's API Key
   The API Key can be found on: https://builder.io/account/settings
 */
-builder.init('9ef67a21535e47fd988bd46f0fed5cc4')
+const API_KEY = '9ef67a21535e47fd988bd46f0fed5cc4'
+builder.init(API_KEY)
+builder.apiVersion = 'v3'
 
 export async function getStaticProps({
   params,
@@ -51,17 +53,24 @@ export async function getStaticProps({
   const config = { locale, locales }
   console.log('preview')
   console.log(preview)
-
-  const page = await builder
-    .get('landing-page', {
-      userAttributes: {
-        urlPath: '/power/' + (params?.page?.join('/') || ''),
-      },
-      preview: preview,
-    })
-    .toPromise()
+  let urlPath = '/power/' + (params?.page?.join('/') || '')
+  console.log(urlPath)
+  const results = await fetch(
+    `https://cdn.builder.io/api/v3/content/landing-page?apiKey=${API_KEY}&userAttributes.urlPath=${urlPath}&cachebust=true&preview=landing-page&noCache=true&includeUnpublished=true&includeRefs=true`
+  ).then((res) => res.json())
   console.log('Builder Response')
-  console.log(page)
+  console.log(results)
+  const page = results?.results?.[0]
+  // const page = await builder
+  //   .get('landing-page', {
+  //     userAttributes: {
+  //       urlPath:
+  //     },
+  //     // preview: preview,
+  //   })
+  //   .toPromise()
+  // console.log('Builder Response')
+  // console.log(page)
   console.log('product ID')
   console.log(page?.data?.product?.data?.data?.id)
   console.log('slug')
