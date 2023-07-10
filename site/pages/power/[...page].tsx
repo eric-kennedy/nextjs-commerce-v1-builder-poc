@@ -169,7 +169,7 @@ export default function Page({
         </div>
         <div
           dangerouslySetInnerHTML={{
-            __html: page?.data.product.data.data.description,
+            __html: page?.data?.product?.data?.data?.description,
           }}
         ></div>
         {product && (
